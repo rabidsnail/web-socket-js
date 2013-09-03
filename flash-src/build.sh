@@ -5,16 +5,16 @@
 # You need Flex 4 SDK:
 # http://opensource.adobe.com/wiki/display/flexsdk/Download+Flex+4
 
-mxmlc \
+compiler='/Applications/Apache\ Flex/flex/bin/mxmlc'
+
+/Applications/Apache\ Flex/flex/bin/mxmlc \
   -static-link-runtime-shared-libraries \
-  -target-player=10.0.0 \
   -output=../WebSocketMain.swf \
   -source-path=src -source-path=third-party \
   src/net/gimite/websocket/WebSocketMain.as &&
 
-mxmlc \
+/Applications/Apache\ Flex/flex/bin/mxmlc \
   -static-link-runtime-shared-libraries \
-  -target-player=10.0.0 \
   -output=../WebSocketMainInsecure.swf \
   -source-path=src -source-path=third-party \
   src/net/gimite/websocket/WebSocketMainInsecure.as &&

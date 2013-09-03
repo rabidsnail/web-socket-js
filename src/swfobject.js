@@ -2,7 +2,7 @@
 	is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 */
 
-var swfobject = function() {
+define([], function() {
 	
 	var UNDEF = "undefined",
 		OBJECT = "object",
@@ -35,7 +35,7 @@ var swfobject = function() {
 		- User agent string detection is only used when no good alternative is possible
 		- Is executed directly for optimal performance
 	*/	
-	ua = function() {
+	ua = (function() {
 		var w3cdom = typeof doc.getElementById != UNDEF && typeof doc.getElementsByTagName != UNDEF && typeof doc.createElement != UNDEF,
 			u = nav.userAgent.toLowerCase(),
 			p = nav.platform.toLowerCase(),
@@ -71,14 +71,14 @@ var swfobject = function() {
 			catch(e) {}
 		}
 		return { w3:w3cdom, pv:playerVersion, wk:webkit, ie:ie, win:windows, mac:mac };
-	}(),
+	}()),
 	
 	/* Cross-browser onDomLoad
 		- Will fire an event as soon as the DOM of a web page is loaded
 		- Internet Explorer workaround based on Diego Perini's solution: http://javascript.nwbox.com/IEContentLoaded/
 		- Regular onload serves as fallback
 	*/ 
-	onDomLoad = function() {
+	onDomLoad = (function() {
 		if (!ua.w3) { return; }
 		if ((typeof doc.readyState != UNDEF && doc.readyState == "complete") || (typeof doc.readyState == UNDEF && (doc.getElementsByTagName("body")[0] || doc.body))) { // function is fired after onload, e.g. when script is inserted dynamically 
 			callDomLoadFunctions();
@@ -120,9 +120,9 @@ var swfobject = function() {
 			}
 			addLoadEvent(callDomLoadFunctions);
 		}
-	}();
+	}());
 	
-	function callDomLoadFunctions() {
+	var callDomLoadFunctions = function() {
 		if (isDomLoaded) { return; }
 		try { // test if we can really add/remove elements to/from the DOM; we don't want to fire it too early
 			var t = doc.getElementsByTagName("body")[0].appendChild(createElement("span"));
@@ -134,22 +134,22 @@ var swfobject = function() {
 		for (var i = 0; i < dl; i++) {
 			domLoadFnArr[i]();
 		}
-	}
+	};
 	
-	function addDomLoadEvent(fn) {
+    var addDomLoadEvent = function(fn) {
 		if (isDomLoaded) {
 			fn();
 		}
 		else { 
 			domLoadFnArr[domLoadFnArr.length] = fn; // Array.push() is only available in IE5.5+
 		}
-	}
+	};
 	
 	/* Cross-browser onload
 		- Based on James Edwards' solution: http://brothercake.com/site/resources/scripts/onload/
 		- Will fire an event as soon as a web page including all of its assets are loaded 
 	 */
-	function addLoadEvent(fn) {
+	var addLoadEvent = function(fn) {
 		if (typeof win.addEventListener != UNDEF) {
 			win.addEventListener("load", fn, false);
 		}
@@ -169,19 +169,19 @@ var swfobject = function() {
 		else {
 			win.onload = fn;
 		}
-	}
+	};
 	
 	/* Main function
 		- Will preferably execute onDomLoad, otherwise onload (as a fallback)
 	*/
-	function main() { 
+	var main = function() { 
 		if (plugin) {
 			testPlayerVersion();
 		}
 		else {
 			matchVersions();
 		}
-	}
+	};
 	
 	/* Detect the Flash Player version for non-Internet Explorer browsers
 		- Detecting the plug-in version via the object element is more precise than using the plugins collection item's description:
@@ -190,7 +190,7 @@ var swfobject = function() {
 		  c. Avoid wrong descriptions by multiple Flash Player entries in the plugin Array, caused by incorrect browser imports
 		- Disadvantage of this method is that it depends on the availability of the DOM, while the plugins collection is immediately available
 	*/
-	function testPlayerVersion() {
+    var testPlayerVersion = function() {
 		var b = doc.getElementsByTagName("body")[0];
 		var o = createElement(OBJECT);
 		o.setAttribute("type", FLASH_MIME_TYPE);
@@ -218,11 +218,11 @@ var swfobject = function() {
 		else {
 			matchVersions();
 		}
-	}
+	};
 	
 	/* Perform Flash Player and SWF version matching; static publishing only
 	*/
-	function matchVersions() {
+	var matchVersions = function() {
 		var rl = regObjArr.length;
 		if (rl > 0) {
 			for (var i = 0; i < rl; i++) { // for each registered object element
@@ -277,9 +277,9 @@ var swfobject = function() {
 				}
 			}
 		}
-	}
+	};
 	
-	function getObjectById(objectIdStr) {
+	var getObjectById = function(objectIdStr) {
 		var r = null;
 		var o = getElementById(objectIdStr);
 		if (o && o.nodeName == "OBJECT") {
@@ -302,7 +302,7 @@ var swfobject = function() {
 		- Win/Mac OS only
 		- no Webkit engines older than version 312
 	*/
-	function canExpressInstall() {
+	var canExpressInstall = function() {
 		return !isExpressInstallActive && hasPlayerVersion("6.0.65") && (ua.win || ua.mac) && !(ua.wk && ua.wk < 312);
 	}
 	

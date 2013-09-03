@@ -20,18 +20,18 @@ public class WebSocketMain extends Sprite implements IWebSocketLogger{
   private var manualPolicyFileLoaded:Boolean = false;
   private var webSockets:Array = [];
   private var eventQueue:Array = [];
+  private var callbackName:String;
   
   public function WebSocketMain() {
+    this.callbackName = loaderInfo.parameters.callbackName;
     ExternalInterface.addCallback("setCallerUrl", setCallerUrl);
     ExternalInterface.addCallback("setDebug", setDebug);
     ExternalInterface.addCallback("create", create);
     ExternalInterface.addCallback("send", send);
     ExternalInterface.addCallback("close", close);
     ExternalInterface.addCallback("loadManualPolicyFile", loadManualPolicyFile);
-    ExternalInterface.addCallback("receiveEvents", receiveEvents);
-    ExternalInterface.call("WebSocket.__onFlashInitialized");
   }
-  
+ 
   public function setCallerUrl(url:String):void {
     callerUrl = url;
   }
@@ -57,12 +57,12 @@ public class WebSocketMain extends Sprite implements IWebSocketLogger{
   
   public function log(message:String):void {
     if (debug) {
-      ExternalInterface.call("WebSocket.__log", encodeURIComponent("[WebSocket] " + message));
+      ExternalInterface.call("(function(e) { if (console && console.log) console.log(e); })", encodeURIComponent("[WebSocket] " + message));
     }
   }
   
   public function error(message:String):void {
-    ExternalInterface.call("WebSocket.__error", encodeURIComponent("[WebSocket] " + message));
+    ExternalInterface.call("(function(e) { if (console && console.error) console.error(e); })", encodeURIComponent("[WebSocket] " + message));
   }
   
   private function parseEvent(event:WebSocketEvent):Object {
@@ -140,19 +140,7 @@ public class WebSocketMain extends Sprite implements IWebSocketLogger{
    */
   public function onSocketEvent(event:WebSocketEvent):void {
     var eventObj:Object = parseEvent(event);
-    eventQueue.push(eventObj);
-    processEvents();
-  }
-  
-  /**
-   * Process our event queue.  If javascript is unresponsive, set
-   * a timeout and try again.
-   */
-  public function processEvents():void {
-    if (eventQueue.length == 0) return;
-    if (!ExternalInterface.call("WebSocket.__onFlashEvent")) {
-      setTimeout(processEvents, 500);
-    }
+    ExternalInterface.call(this.callbackName, eventObj);
   }
   
 }
