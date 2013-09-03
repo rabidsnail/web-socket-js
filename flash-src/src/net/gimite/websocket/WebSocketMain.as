@@ -30,6 +30,7 @@ public class WebSocketMain extends Sprite implements IWebSocketLogger{
     ExternalInterface.addCallback("send", send);
     ExternalInterface.addCallback("close", close);
     ExternalInterface.addCallback("loadManualPolicyFile", loadManualPolicyFile);
+    ExternalInterface.call(this.callbackName, "load");
   }
  
   public function setCallerUrl(url:String):void {

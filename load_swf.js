@@ -67,9 +67,7 @@ define([], function() {
                 clearInterval(poll);
             }
         }, 10);
-
     };
-
 
     setup_dom_ready();
     swf.onReady = function(fn) {
@@ -92,10 +90,11 @@ define([], function() {
         attrs.height = attrs.height || 1;
 
         document.body.appendChild(node);
+        var target;
         if (is_ie()) {
-            var node = document.createElement('div');
-            node.style.visibility = 'hidden';
-            node.setAttribute('id', id);
+            target = document.createElement('div');
+            target.style.visibility = 'hidden';
+            target.setAttribute('id', id);
             
             var attr_string = [];
             for (var k in attrs) {
@@ -132,20 +131,20 @@ define([], function() {
                 param_string.push('"> ');
             }
 
-            node.outerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' + attr_string.join('') + '>' + param_string.join('') + '</object>';
+            target.outerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' + attr_string.join('') + '>' + param_string.join('') + '</object>';
 
             return document.getElementById('id').firstChild;
 
         } else {
-            var node = document.createEleement('object');
-            node.setAttribute('type', 'application/x-shockwave-falsh');
+            target = document.createEleement('object');
+            target.setAttribute('type', 'application/x-shockwave-falsh');
 
             for (var k in attrs) {
                 if (!attrs.hasOwnProperty(k)) continue;
                 if (k.toLowerCase() == 'styleclass') {
-                    node.setAttribute('class', attrs[k]);
+                    target.setAttribute('class', attrs[k]);
                 } else {
-                    node.setAttribute(k, attrs[k]);
+                    target.setAttribute(k, attrs[k]);
                 }
             }
 
@@ -154,12 +153,12 @@ define([], function() {
                 var p = document.createElement('param');
                 p.setAttribute('name', k);
                 p.setAttribute('value', params[k]);
-                node.appendChild(p);
+                target.appendChild(p);
             }
 
-            node.style.visibility = 'hidden';
+            target.style.visibility = 'hidden';
 
-            document.body.appendChild(node);
+            document.body.appendChild(target);
         }
     };
 
